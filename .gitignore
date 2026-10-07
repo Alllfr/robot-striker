@@ -1,0 +1,4 @@
+build/
+*.o
+striker_sim
+run_tests
