@@ -1,0 +1,6 @@
+# Bola langsung terlihat & sudah segaris dengan gawang: 1 tendangan lurus
+striker_x = -1.25
+striker_y = 0.25
+striker_heading = 0
+ball_x = -0.25
+ball_y = 0.25

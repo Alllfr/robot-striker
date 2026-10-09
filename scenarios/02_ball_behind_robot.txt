@@ -1,0 +1,6 @@
+# Bola di belakang robot: robot harus mencari (scan), memutar, lalu menggiring ke posisi tembak
+striker_x = 1.25
+striker_y = -1.75
+striker_heading = 0
+ball_x = -2.75
+ball_y = 1.25

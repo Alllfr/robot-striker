@@ -1,0 +1,6 @@
+# Contoh config SALAH: heading bukan kelipatan 90 -> program menampilkan pesan error
+striker_x = 0.25
+striker_y = 0.25
+striker_heading = 45
+ball_x = 2.25
+ball_y = 0.25

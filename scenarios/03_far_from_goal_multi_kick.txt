@@ -1,0 +1,6 @@
+# Bola jauh dari gawang (> 6 m): perlu beberapa tendangan berantai
+striker_x = -3.75
+striker_y = -2.25
+striker_heading = 90
+ball_x = -4.25
+ball_y = 0.25

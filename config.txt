@@ -1,0 +1,8 @@
+# Skenario bawaan - satuan meter, sumbu x: [-4.5, 4.5], y: [-3.0, 3.0]
+# Posisi di-snap ke tengah petak 0.5 m. Heading kelipatan 90 (0 = menghadap gawang lawan).
+striker_x = -3.25
+striker_y = 1.75
+striker_heading = 0
+ball_x = -0.75
+ball_y = -1.25
+max_ticks = 300

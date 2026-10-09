@@ -1,0 +1,6 @@
+# Bola menempel dinding atas: tendangan diagonal diperlukan
+striker_x = 0.25
+striker_y = 0.25
+striker_heading = 180
+ball_x = 2.25
+ball_y = 2.75
