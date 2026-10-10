@@ -1,167 +1,150 @@
-# Mainan Robot — Striker Humanoid Soccer ICHIRO ITS (C++17, OOP)
+# Mainan Robot Striker Humanoid Soccer ICHIRO ITS
 
-Simulasi 2D berbasis terminal: satu robot **Striker** mencari bola, mendatanginya, mengatur posisi tembak,
-dan menendang bola ke gawang lawan. Game loop berbasis tick (1 tick = 1 detik) dengan siklus
-**Sense → Think → Act**.
+## Gambaran Umum
 
-## Status Level
+Proyek ini merupakan simulasi permainan sepak bola robot dua dimensi berbasis terminal yang dibuat menggunakan C++17 dengan pendekatan Object-Oriented Programming (OOP). Robot berperan sebagai striker yang bertugas mencari bola, mendekati bola, menentukan posisi dan arah tendangan, kemudian menendang bola hingga masuk ke gawang lawan.
 
-| Level | Isi | Status |
-|---|---|---|
-| 1 | `Field`, `Ball`, `Simulator`, abstract `Robot`, `Striker` (inheritance, override `think()`), enkapsulasi, DRY | ✅ |
-| 2 | Composition `Robot HAS-A Sensor`, exception handling (try-catch) untuk aksi tidak valid | ✅ |
-| 3 | (1) File konfigurasi ✅ (2) State Pattern ✅ (3) Unit test ✅ | ✅ |
+Simulasi berjalan menggunakan sistem tick, dengan satu tick mewakili satu detik. Setiap langkah robot mengikuti tiga tahapan utama, yaitu Sense untuk menerima informasi dari sensor, Think untuk menentukan keputusan, dan Act untuk menjalankan aksi.
 
-## Build & Run
+## Status Pengembangan
 
-Hanya Standard Library C++17.
+Proyek ini telah menyelesaikan tiga tingkat pengembangan. Tingkat pertama mencakup pembuatan Field, Ball, Simulator, kelas abstrak Robot, dan Striker, beserta penerapan enkapsulasi, inheritance, method overriding, dan prinsip DRY.
+
+Tingkat kedua menambahkan composition antara Robot dan Sensor serta exception handling untuk menangani aksi yang tidak valid.
+
+Tingkat ketiga mencakup pembacaan konfigurasi dari file, penerapan State Pattern untuk mengatur perilaku robot, dan unit testing. Seluruh tingkat pengembangan tersebut telah diselesaikan.
+
+## Fitur Utama
+
+Program memungkinkan pengguna memasukkan koordinat robot, arah hadap robot, dan posisi bola melalui keyboard. Pengguna juga dapat menggunakan file konfigurasi untuk menentukan kondisi awal simulasi. Jika input tidak sesuai ketentuan, program akan menolaknya dan meminta pengguna memasukkan data kembali.
+
+Apabila bola keluar dari lapangan, bola akan muncul kembali di titik tengah lapangan sehingga robot dapat melanjutkan permainan. Tampilan simulasi juga diperbarui pada posisi terminal yang sama agar pergerakan robot lebih mudah diamati.
+
+Robot dapat menentukan strategi tendangannya secara otomatis. Sistem memilih posisi berdiri, arah hadap, dan salah satu dari tiga arah tendangan, yaitu lurus, diagonal kiri, atau diagonal kanan.
+
+## Cara Menjalankan Program
+
+Program menggunakan standard library C++17 sehingga tidak membutuhkan library eksternal tambahan. Pengguna dapat melakukan kompilasi menggunakan g++ atau CMake.
+
+Pada Linux, macOS, atau Git Bash, program dapat dikompilasi dengan perintah berikut.
 
 ```bash
-# Opsi A - g++ langsung
 g++ -std=c++17 -Wall -Wextra -O2 -Iinclude src/*.cpp -o striker_sim
-
-# Opsi B - CMake
-cmake -S . -B build && cmake --build build
 ```
 
-```bash
-./striker_sim                                # skenario bawaan
-./striker_sim config.txt                     # dari file konfigurasi
-./striker_sim scenarios/02_ball_behind_robot.txt
-./striker_sim config.txt --animate 150       # animasi, 150 ms per tick
-./striker_sim config.txt --quiet             # hanya frame akhir + hasil
+Untuk Windows menggunakan PowerShell dan MinGW atau MSYS2, perintah kompilasinya adalah sebagai berikut.
+
+```powershell
+mkdir build -Force
+g++ -std=c++17 -O2 -Iinclude (Get-ChildItem src\*.cpp).FullName -o build\striker_sim.exe
 ```
 
-Exit code: `0` = gol, `1` = tidak gol (timeout / menyerah), `2` = konfigurasi salah.
+Setelah kompilasi selesai, program dapat dijalankan dengan beberapa pilihan. Tanpa argumen tambahan, program akan meminta pengguna memasukkan koordinat robot dan bola. Opsi `--default` menjalankan skenario bawaan, sedangkan nama file konfigurasi digunakan untuk menjalankan skenario tertentu.
 
-### Unit test
+Opsi `--animate 300` mengatur jeda animasi menjadi 300 milidetik per tick. Opsi `--no-clear` menampilkan setiap frame secara berurutan ke bawah, sedangkan `--quiet` hanya menampilkan frame terakhir dan hasil simulasi.
 
-```bash
-g++ -std=c++17 -Wall -Wextra -O2 -Iinclude $(ls src/*.cpp | grep -v main.cpp) tests/*.cpp -o run_tests
-./run_tests
-# atau dengan CMake: cmake --build build && ./build/run_tests
-```
+Pada Windows, gunakan `.\build\striker_sim.exe` sebagai pengganti nama executable biasa.
 
-## Format output
+Program menggunakan kode keluar 0 ketika berhasil mencetak gol, kode 1 ketika tidak mencetak gol hingga batas waktu berakhir, dan kode 2 ketika konfigurasi tidak valid.
 
-```
-. . . . . . . . . . . . . . . . . .
-. . . . . . . . . . . . . . . . . .
-. . . . . . . . . . . . . . . . . .
-. . . . . . . . . . . . . . . . . . #
-. . . . . . . . . . . . . . . . . . #
-. . . . . . . . . @ . . . . . . . . #
-. . . . . . . . @ @ . . . . . . . . #
-. . . . . . . @ @ @ . . . . . . . . #
-. . . . . . R @ @ @ . . . . . . . O #
-. . . . . . . @ @ @ . . . . . . . .
-. . . . . . . . @ @ . . . . . . . .
-. . . . . . . . . @ . . . . . . . .
-```
+## Input dan Sistem Koordinat
 
-`R` robot · `O` bola · `@` area pandang kamera · `.` kosong · `#` gawang. Elemen dipisahkan spasi,
-baris paling atas = y terbesar. Grid 18 × 12 petak (1 petak = 0.5 m).
+Lapangan menggunakan sistem koordinat dengan titik pusat di posisi (0, 0). Pengguna perlu memasukkan lima nilai, yaitu koordinat x dan y robot, arah hadap robot, serta koordinat x dan y bola.
 
-## Asumsi desain (penting untuk dijelaskan saat review)
+Nilai x berada pada rentang -4,5 hingga 4,5 meter, sedangkan nilai y berada pada rentang -3 hingga 3 meter. Arah hadap robot harus merupakan kelipatan 90 derajat. Arah 0 derajat menghadap ke timur atau gawang lawan, 90 derajat menghadap ke utara, 180 derajat menghadap ke barat, dan -90 derajat menghadap ke selatan.
 
-Spesifikasi tidak menentukan semuanya, jadi ini keputusan yang saya ambil:
+Koordinat dapat menggunakan angka desimal, tetapi posisi akhirnya dibulatkan ke pusat petak terdekat dengan ukuran 0,5 meter. Program menolak input yang bukan angka, berada di luar lapangan, menggunakan arah hadap yang tidak sesuai, atau menempatkan robot dan bola pada petak yang sama.
 
-1. **Robot bergerak di grid, heading kelipatan 90°.** Maju = tepat 1 petak (0.5 m, batas maksimum),
-   putar maksimum 90°/tick. Gerak diagonal ditolak karena 0.707 m > batas 0.5 m/tick.
-2. **Kamera = segitiga** dengan apex di robot, tinggi 1.5 m (3 petak), alas 3.5 m (7 petak) di ujung.
-   Sebuah petak terlihat jika titik tengahnya ada di dalam segitiga → 3 + 5 + 7 = **15 petak**.
-   Petak di depan robot (tengah segitiga) = petak tendang; 3 petak terdekat = 3 arah tendangan
-   (lurus, kiri-diagonal, kanan-diagonal).
-3. **Bola**: ditendang 3 m/tick lalu melambat 1 m/tick → jarak 3 + 2 + 1 = **6 m**, berhenti, lalu
-   di-snap ke tengah petak. Menabrak dinding = berhenti. Melewati garis x = 4.5 dengan |y| ≤ 1.5 = **gol**.
-4. **Sense tanpa curang**: `Robot::sense()` hanya memanggil `Sensor::capture()`. `Striker::think()` hanya
-   menerima `Perception` (posisi relatif bola dari kamera). Posisi global bola dibangun robot sendiri dari
-   pose + data kamera, dan disimpan sebagai *memori*.
-5. **Robot tahu fisika tendangan** (model internal). `KickPlanner` memakai `Ball::predictKick()` untuk
-   memprediksi ke mana bola berhenti. Ini bukan membaca Simulator; hanya model aturan yang sama.
+Tampilan terminal menggunakan kode ANSI. Karena itu, program sebaiknya dijalankan melalui terminal modern seperti Windows Terminal, terminal VS Code, Linux, atau macOS. Jika karakter kontrol muncul sebagai teks, gunakan opsi `--no-clear`.
 
-## Alur kecerdasan Striker (State Pattern)
+## Pengujian Program
 
-```
-          bola terlihat                 sampai di posisi tembak
-SearchState ───────────▶ ApproachState ─────────────────────▶ AlignState
-    ▲   ◀─── bola hilang ───┘   ▲                                  │
-    │                           └── bola pindah / rencana batal ───┤
-    │                                                              ▼ heading benar &
-    └───────── tunggu bola berhenti (2 tick) ────────────── KickState   bola di petak depan
-```
+Proyek ini dilengkapi unit test untuk memeriksa fungsi dan perilaku sistem. Pengujian dapat dikompilasi dengan g++ atau dijalankan melalui CMake. Hasil yang diharapkan adalah 49 dari 49 pengujian berhasil.
 
-| State | Aksi pada tahap Think | Keluar ke |
-|---|---|---|
-| **SearchState** (`SEARCH_BALL`) | Patroli ke 6 waypoint (jarak 7 petak → kamera menutup seluruh lapangan); di tiap waypoint putar 3 × 90° untuk memindai 4 arah | Approach saat bola masuk memori |
-| **ApproachState** (`APPROACH_BALL`) | Minta rencana ke `KickPlanner`, lalu jalan (BFS, menghindari petak bola) ke petak tembak | Align saat tiba; Search jika bola hilang |
-| **AlignState** (`ALIGN_TO_GOAL`) | Putar ke heading rencana; verifikasi lewat kamera bahwa bola persis di petak depan | Kick jika benar; Approach jika tidak |
-| **KickState** (`KICK`) | Tendang, ingat prediksi tempat bola berhenti, tunggu 2 tick | Search (lalu langsung Approach ke bola) |
+Output simulasi menampilkan nomor tick, state robot, aksi yang sedang dijalankan, posisi robot, arah hadap, dan posisi bola. Lapangan direpresentasikan menggunakan grid berukuran 18 × 12 petak, dengan setiap petak mewakili 0,5 meter.
 
-Setiap `State::update()` boleh mengembalikan `nullopt` ("saya hanya pindah state"), sehingga transisi
-tidak membuang 1 tick.
+Simbol R digunakan untuk robot, O untuk bola, @ untuk area pandang kamera, titik untuk area kosong, dan tanda pagar untuk gawang. Pesan tambahan akan ditampilkan apabila aksi ditolak atau bola harus dimunculkan kembali di tengah lapangan.
 
-### Otak strategi: `KickPlanner`
+## Asumsi dan Aturan Simulasi
 
-Saat dibuat, planner menghitung untuk **setiap petak bola** jumlah tendangan minimum menuju gol (DP di
-atas semua kombinasi posisi berdiri × arah tendangan, hasil tiap tendangan diprediksi oleh fisika bola).
-Saat `plan()`, robot hanya memilih tendangan yang berada di *rantai optimal* (tiap tendangan mengurangi
-sisa tendangan sebanyak 1), lalu memilih yang paling murah dijangkau (jalan + putar). Hasilnya: tidak
-ada bolak-balik tanpa kemajuan.
+Robot bergerak pada grid dengan arah hadap berupa kelipatan 90 derajat. Dalam satu tick, robot dapat bergerak maju maksimal satu petak atau 0,5 meter dan berputar maksimal 90 derajat. Gerakan diagonal tidak diperbolehkan karena jaraknya melebihi batas pergerakan per tick.
 
-## Penjelasan skenario uji
+Kamera robot memiliki area pandang berbentuk segitiga dengan tinggi 1,5 meter dan lebar alas 3,5 meter. Area ini mencakup 15 petak. Petak yang berada tepat di depan robot menjadi posisi bola yang ideal untuk ditendang, sementara tiga petak terdekat digunakan untuk menentukan pilihan arah tendangan.
 
-| File | Tujuan | Hasil |
-|---|---|---|
-| `config.txt` | Skenario bawaan | Gol ±tick 25 |
-| `scenarios/01_ball_in_front.txt` | Bola sudah terlihat & segaris gawang | Gol tick 3 |
-| `scenarios/02_ball_behind_robot.txt` | Bola di belakang robot → harus mencari | Gol |
-| `scenarios/03_far_from_goal_multi_kick.txt` | Bola > 6 m dari gawang → tendangan berantai | Gol |
-| `scenarios/04_ball_near_wall.txt` | Bola menempel dinding → tendangan diagonal | Gol |
-| `scenarios/05_ball_stuck_in_corner.txt` | Kasus batas: bola di pojok kanan-atas | Striker menyerah (terdokumentasi) |
-| `scenarios/06_invalid_config.txt` | Config salah (heading 45°) | Pesan error, exit code 2 |
+Bola bergerak sejauh 3 meter pada tick pertama, kemudian melambat dengan jarak 2 meter dan 1 meter pada tick berikutnya. Setelah itu, bola berhenti dan posisinya disesuaikan ke pusat petak terdekat. Jika bola keluar lapangan, bola akan muncul kembali di petak tengah.
 
-Pengujian menyeluruh (unit test `striker_scores_from_every_interior_ball_cell`): bola di **semua 160 petak
-interior** selalu berhasil dicetak menjadi gol. Pada uji sapuan tambahan (semua 216 petak bola × 6 posisi
-awal robot = 1290 skenario): 1284 gol (maks 103 tick), 6 "menyerah" — semuanya bola di pojok kanan-atas.
+Gol dinyatakan berhasil apabila bola melewati garis x = 4,5 meter dengan nilai absolut y tidak lebih dari 1,5 meter.
 
-### Kenapa pojok kanan-atas mustahil?
-Dengan aturan "robot hanya menendang ke 3 petak di depannya" dan robot harus berdiri tepat di belakang bola,
-bola di pojok itu tidak bisa didorong keluar: berdiri di barat/selatan hanya bisa menendang ke arah dinding.
-Ini keterbatasan aturan, bukan bug; Striker mendeteksinya (`kicksToGoal == ∞`) dan berhenti.
+Dalam penerapan sistem sensor, robot tidak membaca posisi bola secara langsung dari simulator. Robot hanya menerima informasi persepsi yang dihasilkan sensor berdasarkan area pandang kamera. Selanjutnya, robot memperkirakan posisi bola berdasarkan posisi dan arah hadapnya sendiri, kemudian menyimpan hasil perkiraan tersebut sebagai memori.
 
-## Exception handling (Level 2)
+Robot juga memiliki model fisika tendangan internal. Model ini digunakan oleh KickPlanner untuk memperkirakan posisi akhir bola tanpa membaca keadaan internal simulator secara langsung.
 
-Hierarki di `Exceptions.hpp`: `InvalidActionException` ← `SpeedLimitException`, `TurnLimitException`,
-`OutOfBoundsException`, `BlockedException`, `KickNotPossibleException`. `Simulator::executeAction()`
-melempar; `Simulator::step()` menangkap, mencatat, lalu memanggil `Robot::onActionRejected()` agar Striker
-membatalkan rencananya. `ConfigException` dipakai untuk file konfigurasi/posisi awal yang salah.
+## Alur Pengambilan Keputusan Robot
 
-## Struktur proyek
+Perilaku robot diatur menggunakan State Pattern yang membagi proses permainan menjadi empat state utama, yaitu SearchState, ApproachState, AlignState, dan KickState.
 
-```
-include/   header (Field, Ball, Sensor, Robot, Striker, StrikerState(s), KickPlanner, Navigator, Simulator, ...)
-src/       implementasi + main.cpp
-tests/     unit test (framework mini sendiri, tanpa library eksternal)
-scenarios/ skenario uji      config.txt  skenario bawaan
-docs/class_diagram.md        Class Diagram (Mermaid)
-```
+Pada SearchState, robot mencari bola dengan berpatroli menuju enam titik pengamatan atau waypoint. Di setiap titik, robot berputar untuk memindai empat arah sehingga dapat mengamati seluruh lapangan.
 
-Class diagram: lihat [`docs/class_diagram.md`](docs/class_diagram.md).
+Ketika bola ditemukan, robot berpindah ke ApproachState. Pada tahap ini, robot meminta rencana tendangan dari KickPlanner dan mencari jalur menuju posisi tembak menggunakan algoritma Breadth-First Search atau BFS. Jalur yang dipilih menghindari petak yang ditempati bola.
 
-## Prinsip OOP yang dipakai
+Setelah mencapai posisi tembak, robot memasuki AlignState. Robot menyesuaikan arah hadapnya berdasarkan rencana yang telah dibuat, kemudian memastikan melalui kamera bahwa bola berada tepat di petak depan. Jika posisi dan arah sudah benar, robot dapat melanjutkan ke tahap penendangan.
 
-- **Encapsulation**: atribut `Robot` private, akses via getter/setter yang melempar exception jika tidak valid.
-- **Inheritance & Polymorphism**: `Striker : Robot`, `think()` pure virtual; state lewat `StrikerState`.
-- **Composition**: `Robot HAS-A Sensor`, `Simulator` memiliki `Field`, `Ball`, `Robot`.
-- **DRY**: jarak, bearing, normalisasi sudut, transformasi frame lokal ada di `MathUtils.hpp` dan `Robot`
-  (`distanceTo`, `bearingTo`, `stepToward`); fisika bola dipakai bersama oleh simulator dan prediksi planner
-  (`Ball::update` ↔ `Ball::predictKick`).
+Pada KickState, robot menendang bola sesuai arah yang telah dipilih. Robot kemudian menyimpan perkiraan posisi akhir bola dan menunggu selama dua tick sebelum kembali mencari bola. Setelah bola ditemukan kembali, robot melanjutkan proses mendekati dan menendangnya menuju gawang.
+
+Jika bola menghilang dari pengamatan atau rencana tendangan tidak lagi sesuai, robot dapat kembali ke state sebelumnya untuk menyusun strategi baru. Perpindahan state juga dirancang agar tidak membuang tick tambahan ketika robot hanya perlu berganti state.
+
+## Strategi Perencanaan Tendangan
+
+KickPlanner berfungsi menentukan rangkaian tendangan yang dapat membawa bola menuju gol dengan jumlah tendangan minimum.
+
+Saat dibuat, planner menghitung kebutuhan tendangan dari setiap kemungkinan posisi bola berdasarkan berbagai kombinasi posisi berdiri dan arah tendangan. Perhitungan dilakukan menggunakan dynamic programming dengan memanfaatkan prediksi fisika bola.
+
+Ketika menentukan rencana, robot hanya memilih tendangan yang termasuk dalam jalur optimal, yaitu tendangan yang mengurangi jumlah sisa tendangan minimum sebanyak satu. Jika terdapat beberapa pilihan, robot memilih rencana yang membutuhkan biaya perjalanan paling rendah, berdasarkan pergerakan dan rotasi robot.
+
+Strategi ini membantu robot menghindari pergerakan berulang tanpa kemajuan.
+
+Ketika bola ditendang keluar lapangan, planner memperhitungkan bahwa bola akan kembali ke tengah. Dengan mekanisme tersebut, seluruh 216 kemungkinan posisi bola dapat diselesaikan, termasuk posisi di sudut lapangan yang sebelumnya sulit dijangkau.
+
+## Skenario Pengujian
+
+Program telah diuji menggunakan beberapa skenario. Skenario bawaan berhasil mencetak gol pada tick ke-25. Ketika bola berada di depan robot dan segaris dengan gawang, gol tercapai pada tick ke-3.
+
+Untuk kondisi bola berada di belakang robot, program berhasil mencetak gol pada tick ke-74. Skenario tendangan berantai ketika bola berada jauh dari gawang berhasil pada tick ke-28, sedangkan skenario bola di dekat dinding berhasil pada tick ke-40.
+
+Pada skenario bola berada di sudut lapangan, bola ditendang keluar, muncul kembali di tengah, lalu berhasil menghasilkan gol pada tick ke-56. Sementara itu, konfigurasi dengan arah hadap 45 derajat ditolak dan menghasilkan pesan kesalahan dengan kode keluar 2.
+
+Pengujian menyeluruh dilakukan pada 216 petak posisi bola dengan enam posisi awal robot. Sebanyak 1.290 skenario berhasil berakhir dengan gol dalam batas maksimal 90 tick, termasuk 562 skenario yang melibatkan kemunculan kembali bola di tengah lapangan.
+
+Selain itu, unit test `striker_scores_from_every_interior_ball_cell` digunakan untuk memastikan bahwa seluruh 160 petak bagian dalam lapangan dapat menghasilkan gol.
+
+## Exception Handling
+
+Program menerapkan hierarki exception untuk menangani kesalahan saat robot melakukan aksi. Jenis kesalahan yang ditangani meliputi pelanggaran batas kecepatan, batas rotasi, batas lapangan, jalur yang terhalang, dan kondisi ketika tendangan tidak dapat dilakukan.
+
+Simulator melempar exception melalui `executeAction()`. Selanjutnya, `step()` menangkap kesalahan tersebut, mencatatnya, dan memanggil `Robot::onActionRejected()` agar robot dapat membatalkan rencana yang tidak valid.
+
+Kesalahan pada file konfigurasi atau posisi awal ditangani menggunakan `ConfigException`. Fungsi utama program kemudian menangkap exception tersebut dan menampilkan pesan kesalahan yang jelas kepada pengguna.
+
+## Struktur Proyek
+
+Folder `include` berisi deklarasi kelas dan header untuk komponen seperti Field, Ball, Sensor, Robot, Striker, StrikerState, KickPlanner, Navigator, dan Simulator.
+
+Folder `src` berisi implementasi setiap komponen serta `main.cpp`, yang menangani input pengguna dan pilihan perintah program.
+
+Folder `tests` berisi unit test dengan framework sederhana yang dibuat tanpa library eksternal. Folder `scenarios` menyimpan berbagai skenario pengujian dan file konfigurasi bawaan. Dokumentasi diagram kelas tersedia pada `docs/class_diagram.md`.
+
+## Penerapan Object-Oriented Programming
+
+Proyek ini menerapkan beberapa prinsip utama OOP.
+
+Encapsulation digunakan dengan menjadikan atribut Robot bersifat private dan menyediakan akses melalui getter serta setter. Validasi dilakukan untuk mencegah nilai yang tidak sesuai, dengan exception dilempar apabila terjadi pelanggaran aturan.
+
+Inheritance dan polymorphism diterapkan melalui kelas Striker yang mewarisi kelas Robot. Kelas Robot menyediakan method abstrak `think()` yang implementasinya ditentukan oleh kelas turunannya. Perilaku robot juga dikelola menggunakan kelas-kelas state.
+
+Composition digunakan dengan menjadikan Sensor sebagai bagian dari Robot. Simulator juga memiliki komponen Field, Ball, dan Robot untuk membentuk keseluruhan lingkungan permainan.
+
+Prinsip DRY atau Don't Repeat Yourself diterapkan dengan memusatkan operasi matematika seperti perhitungan jarak, arah, normalisasi sudut, dan transformasi koordinat pada komponen yang digunakan bersama. Logika fisika bola juga digunakan kembali oleh simulator dan planner agar pergerakan aktual sesuai dengan prediksi strategi.
 
 ## Pernyataan Penggunaan AI
 
-> **ISI/EDIT BAGIAN INI SESUAI KENYATAAN SEBELUM DIKUMPULKAN.**
->
-> Kerangka arsitektur, seluruh source code C++ (`include/`, `src/`), unit test (`tests/`), skenario uji,
-> `docs/class_diagram.md`, dan draf README ini dibuat dengan bantuan **Claude (Anthropic)**, kemudian
-> dijalankan, diuji, dan dipelajari oleh saya. Bagian yang saya ubah/tulis sendiri: _(sebutkan di sini)_.
+AI digunakan dalam pengembangan dari sebagian penulisan source code dan referensi mekanisme robot agar lebih presisi, terutama logika input dari user dan revisi pada main.cpp serta planner untuk membuat program lebih sesuai dengan yang ditugaskan. AI juga digunakan untuk mencari referensi dan validasi dalam pembuatan class diagram. Program kemudian dijalankan, diuji, dan dipelajari oleh pengembang.
