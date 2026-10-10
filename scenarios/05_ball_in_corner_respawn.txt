@@ -1,0 +1,6 @@
+# Bola di pojok kanan-atas: tendangan keluar lapangan -> bola respawn di tengah, lalu dicetak
+striker_x = 0.25
+striker_y = 0.25
+striker_heading = 0
+ball_x = 4.25
+ball_y = 2.75

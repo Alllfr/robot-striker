@@ -33,16 +33,21 @@ TEST(ball_misses_goal_when_outside_posts) {
     b.kick({1, 0});
     for (int i = 0; i < 4; ++i) b.update(f);
     CHECK(!b.isInGoal());
-    CHECK_NEAR(b.getPosition().x, 4.25, 1e-9);  // berhenti di petak terakhir
+    CHECK(b.consumeOutOfBounds());               // keluar lapangan -> respawn
+    CHECK_NEAR(b.getPosition().x, 0.25, 1e-9);   // petak tengah lapangan
+    CHECK_NEAR(b.getPosition().y, 0.25, 1e-9);
+    CHECK(!b.isMoving());
 }
 
-TEST(ball_stops_at_side_wall) {
+TEST(ball_respawns_at_center_when_leaving_side) {
     Field f;
     Ball b({0.25, 2.25});
     b.kick({0, 1});
     b.update(f);
+    CHECK(b.consumeOutOfBounds());
+    CHECK(!b.consumeOutOfBounds());              // flag hanya sekali
     CHECK(!b.isMoving());
-    CHECK_NEAR(b.getPosition().y, 2.75, 1e-9);
+    CHECK(f.cellOf(b.getPosition()) == f.centerCell());
 }
 
 TEST(predictKick_matches_real_simulation) {

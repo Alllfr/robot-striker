@@ -36,4 +36,5 @@ public:
     math::Vec2 cellCenter(const Cell& c) const;      // throw std::out_of_range jika petak invalid
     bool isGoalRow(int row) const;                   // untuk menggambar '#'
     bool isBoundaryCell(const Cell& c) const;
+    Cell centerCell() const { return {kCols / 2, kRows / 2}; }   // petak titik tengah (respawn bola)
 };

@@ -50,10 +50,12 @@ TEST(planner_interior_cells_are_all_solvable) {
             CHECK(p.kicksToGoal({col, row}) < KickPlanner::kUnreachable);
 }
 
-TEST(planner_corner_is_unsolvable_and_plan_is_invalid) {
+TEST(planner_every_cell_is_solvable_thanks_to_respawn) {
     Field f;
     KickPlanner p(f);
-    Cell corner{17, 11};
-    CHECK(p.kicksToGoal(corner) >= KickPlanner::kUnreachable);
-    CHECK(!p.plan(corner, {5, 5}, 0).valid);
+    for (int row = 0; row < Field::kRows; ++row)
+        for (int col = 0; col < Field::kCols; ++col)
+            CHECK(p.kicksToGoal({col, row}) < KickPlanner::kUnreachable);
+    CHECK(p.plan({17, 11}, {5, 5}, 0).valid);
 }
+

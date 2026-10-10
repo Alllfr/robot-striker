@@ -12,8 +12,8 @@ void Ball::kick(const math::Vec2& direction) {
     speed_ = kKickSpeed;
 }
 
-// Maju sejauh `dist` dari `from`; berhenti di dinding pertama yang ditabrak.
-// Jika dinding yang kena adalah garis gawang dan |y| <= setengah lebar gawang -> GOL.
+// Maju sejauh `dist` dari `from`; berhenti di batas lapangan pertama yang dilewati.
+// Jika batas yang kena adalah garis gawang dan |y| <= setengah lebar gawang -> GOL.
 Ball::Step Ball::advance(const Field& field, const math::Vec2& from, const math::Vec2& dir, double dist) {
     const double inf = std::numeric_limits<double>::infinity();
     const double eps = 1e-12;
@@ -44,7 +44,11 @@ void Ball::update(const Field& field) {
         inGoal_ = true;
         speed_ = 0.0;
     } else if (s.hitWall) {
+        // Keluar lapangan -> respawn di tengah lapangan, diam.
+        outOfBounds_ = true;
         speed_ = 0.0;
+        position_ = field.cellCenter(field.centerCell());
+        return;
     }
     if (speed_ <= 1e-9) {
         speed_ = 0.0;
@@ -63,5 +67,6 @@ KickPrediction Ball::predictKick(const Field& field, const math::Vec2& start, co
     }
     result.finalPosition = sim.position_;
     result.goal = sim.inGoal_;
+    result.outOfBounds = sim.outOfBounds_;
     return result;
 }

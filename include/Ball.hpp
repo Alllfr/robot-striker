@@ -6,11 +6,13 @@
 struct KickPrediction {
     math::Vec2 finalPosition;
     bool goal = false;
+    bool outOfBounds = false;   // bola keluar lapangan -> respawn di tengah
     int ticks = 0;
 };
 
 // Bola: ditendang dengan kecepatan awal 3 m/tick, melambat 1 m/tick tiap tick
 // (jarak per tick: 3, 2, 1 -> total 6 m).
+// Bola yang keluar lapangan (bukan lewat gawang) langsung respawn di petak tengah lapangan.
 class Ball {
 public:
     static constexpr double kKickSpeed = 3.0;
@@ -23,6 +25,8 @@ public:
     double getSpeed() const { return speed_; }
     bool isMoving() const { return speed_ > 0.0; }
     bool isInGoal() const { return inGoal_; }
+    // true sekali setelah bola keluar lapangan & di-respawn (lalu otomatis direset).
+    bool consumeOutOfBounds() { bool v = outOfBounds_; outOfBounds_ = false; return v; }
 
     void kick(const math::Vec2& direction);  // throw std::invalid_argument jika arah nol
     void update(const Field& field);         // maju satu tick
@@ -43,4 +47,5 @@ private:
     math::Vec2 direction_{1.0, 0.0};
     double speed_ = 0.0;
     bool inGoal_ = false;
+    bool outOfBounds_ = false;
 };

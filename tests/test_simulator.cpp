@@ -71,10 +71,10 @@ TEST(striker_scores_from_every_interior_ball_cell) {
         }
 }
 
-TEST(striker_gives_up_on_trapped_ball) {
+TEST(striker_scores_from_corner_via_respawn) {
     Simulator sim(makeConfig({5, 5}, 0, {17, 11}));
     while (sim.outcome() == Outcome::RUNNING) sim.step();
-    CHECK(sim.outcome() == Outcome::GAVE_UP);
+    CHECK(sim.outcome() == Outcome::GOAL);
 }
 
 TEST(robot_never_reads_ball_directly) {
