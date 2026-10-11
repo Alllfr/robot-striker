@@ -113,7 +113,6 @@ Untuk kondisi bola berada di belakang robot, program berhasil mencetak gol pada 
 
 Pada skenario bola berada di sudut lapangan, bola ditendang keluar, muncul kembali di tengah, lalu berhasil menghasilkan gol pada tick ke-56. Sementara itu, konfigurasi dengan arah hadap 45 derajat ditolak dan menghasilkan pesan kesalahan dengan kode keluar 2.
 
-Pengujian menyeluruh dilakukan pada 216 petak posisi bola dengan enam posisi awal robot. Sebanyak 1.290 skenario berhasil berakhir dengan gol dalam batas maksimal 90 tick, termasuk 562 skenario yang melibatkan kemunculan kembali bola di tengah lapangan.
 
 Selain itu, unit test `striker_scores_from_every_interior_ball_cell` digunakan untuk memastikan bahwa seluruh 160 petak bagian dalam lapangan dapat menghasilkan gol.
 
