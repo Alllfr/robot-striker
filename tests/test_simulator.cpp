@@ -83,3 +83,19 @@ TEST(robot_never_reads_ball_directly) {
     sim.step();
     CHECK(sim.robot().stateName() == "SearchState");
 }
+
+TEST(ball_out_of_bounds_respawns_in_simulation) {
+    // Bola di pojok kanan-atas: satu-satunya jalan adalah tendangan yang keluar lapangan.
+    // Bola harus respawn di tengah (pesan muncul), lalu robot tetap berhasil mencetak gol.
+    Simulator sim(makeConfig({5, 5}, 0, {17, 11}));
+    bool respawned = false;
+    for (int i = 0; i < 400 && sim.outcome() == Outcome::RUNNING; ++i) {
+        sim.step();
+        if (sim.lastError().find("respawn") != std::string::npos) {
+            respawned = true;
+            CHECK(sim.field().cellOf(sim.ball().getPosition()) == sim.field().centerCell());
+        }
+    }
+    CHECK(respawned);
+    CHECK(sim.outcome() == Outcome::GOAL);
+}
