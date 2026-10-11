@@ -79,6 +79,7 @@ void Simulator::step() {
     }
 
     ball_.update(field_);
+    if (ball_.consumeOutOfBounds()) lastError_ = "Bola keluar lapangan -> respawn di tengah lapangan";
     if (ball_.isInGoal()) outcome_ = Outcome::GOAL;
     else if (robot_->hasGivenUp()) outcome_ = Outcome::GAVE_UP;
     else if (tick_ >= config_.maxTicks) outcome_ = Outcome::TIMEOUT;
